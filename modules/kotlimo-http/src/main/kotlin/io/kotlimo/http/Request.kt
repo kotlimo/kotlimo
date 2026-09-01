@@ -26,6 +26,8 @@ class Request(
 ) {
     private val bag = routeParameters.toMutableMap()
     var route: io.kotlimo.routing.Route? = null
+    var sessionStore: io.kotlimo.session.Session? = null
+    var user: io.kotlimo.auth.Authenticatable? = null
 
     val path: String
         get() {
@@ -98,6 +100,19 @@ class Request(
     fun routeParameters(): Map<String, String> = bag.toMap()
 
     fun isSecure(): Boolean = header("X-Forwarded-Proto") == "https"
+
+    fun session(): io.kotlimo.session.Session =
+        sessionStore ?: throw IllegalStateException("Session is not available. Register StartSession middleware.")
+
+    fun user(): io.kotlimo.auth.Authenticatable? = user
+
+    fun guest(): Boolean = user == null
+
+    fun check(): Boolean = user != null
+
+    fun csrf(): String = session().token()
+
+    fun hasSession(): Boolean = sessionStore != null
 
     companion object {
         fun get(uri: String, query: Map<String, String> = emptyMap()): Request =

@@ -25,7 +25,13 @@ view("home", mapOf("title" to "Kotlimo"))</code></pre>
     "email" to "required|email",
     "name" to "required|min:3"
 ))</code></pre>
-        <p>Failed validation throws <code class="inline">ValidationException</code> with per-field messages, matching Laravel's Form Request feel.</p>
+        <p>Failed validation throws <code class="inline">ValidationException</code> with per-field messages. JSON clients receive HTTP 422.</p>
+
+        <h2>Session, user, CSRF</h2>
+        <pre><code>request.session().put("locale", "en")
+request.user()
+request.csrf()</code></pre>
+        <p>See <a href="/docs/session">Sessions</a> and <a href="/docs/authentication">Authentication</a>.</p>
     </article>
 </div>
 @endsection

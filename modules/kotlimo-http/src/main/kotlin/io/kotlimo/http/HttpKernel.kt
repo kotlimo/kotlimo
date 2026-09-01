@@ -3,6 +3,7 @@ package io.kotlimo.http
 import io.kotlimo.container.Container
 import io.kotlimo.routing.ControllerDispatcher
 import io.kotlimo.routing.Router
+import io.kotlimo.validation.ValidationException
 import kotlin.reflect.KClass
 
 class HttpKernel(
@@ -22,6 +23,8 @@ class HttpKernel(
             }
         } catch (e: HttpException) {
             e.toResponse(request)
+        } catch (e: ValidationException) {
+            renderValidation(request, e)
         } catch (e: Exception) {
             renderException(request, e)
         }
@@ -43,6 +46,16 @@ class HttpKernel(
         return MiddlewarePipeline(route.middleware).send(request) { incoming ->
             dispatcher.dispatch(route, incoming)
         }
+    }
+
+    private fun renderValidation(request: Request, error: ValidationException): Response {
+        if (request.wantsJson() || request.ajax()) {
+            return Response.json(mapOf("message" to error.message, "errors" to error.errors), 422)
+        }
+        return Response.html(
+            "<h1>422</h1><p>${io.kotlimo.support.Str.escapeHtml(error.message ?: "The given data was invalid.")}</p>",
+            422
+        )
     }
 
     private fun renderException(request: Request, error: Exception): Response {

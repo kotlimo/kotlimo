@@ -1,0 +1,4 @@
+{
+  "driver": "log",
+  "from": "hello@example.com"
+}

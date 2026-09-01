@@ -6,7 +6,7 @@
         <div>
             <p class="eyebrow">Open source · JDK 21</p>
             <h1>The Kotlin Framework<br><em>for Web Artisans</em></h1>
-            <p class="lede">Kotlimo is a web application framework with expressive, elegant syntax. It gives Kotlin an IoC container, routing, Blade-like views, an Eloquent-style ORM, validation, and a Craft CLI.</p>
+            <p class="lede">Kotlimo is a web application framework with expressive, elegant syntax. It gives Kotlin an IoC container, routing, Blade-like views, an Eloquent-style ORM, sessions, CSRF, auth, validation, queues, mail, and a Craft CLI.</p>
             <div class="hero-actions">
                 <div class="command" data-copy="./gradlew :website:run">
                     <span class="prompt">$</span>
@@ -41,6 +41,7 @@
                 <li>Expressive routing and middleware</li>
                 <li>Constructor auto-wiring IoC container</li>
                 <li>Query builder and Active Record models</li>
+                <li>Sessions, CSRF, and session-based auth</li>
                 <li>Kote templates with Blade-like syntax</li>
             </ul>
         </div>
@@ -100,7 +101,7 @@ val posts = user?.hasMany(<span class="type">Post</span>::class)</code></pre>
             </article>
             <article class="card">
                 <h3>Craft CLI</h3>
-                <p>List routes, generate controllers and models, serve the app, or export this site.</p>
+                <p>Scaffold an app, migrate, generate classes, serve, or export this site.</p>
                 <a href="/docs/artisan">CLI docs</a>
             </article>
         </div>

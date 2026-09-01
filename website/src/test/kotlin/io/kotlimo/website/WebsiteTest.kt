@@ -32,6 +32,9 @@ class WebsiteTest : HttpTestCase() {
         get("/docs").assertOk().assertSee("Installation")
         get("/docs/routing").assertOk().assertSee("Route groups")
         get("/docs/database").assertOk().assertSee("Query builder")
+        get("/docs/session").assertOk().assertSee("CSRF")
+        get("/docs/authentication").assertOk().assertSee("Auth.attempt")
+        get("/docs/installation").assertOk().assertSee("./gradlew :kotlimo-console:run --args='new blog'")
         get("/docs/artisan").assertOk().assertSee("./gradlew :website:run --args='route:list'")
         get("/docs/missing").assertStatus(404)
     }

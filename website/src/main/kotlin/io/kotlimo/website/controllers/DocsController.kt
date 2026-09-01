@@ -8,12 +8,18 @@ import io.kotlimo.http.abort
 class DocsController {
     private val pages = listOf(
         DocPage("installation", "Installation"),
+        DocPage("configuration", "Configuration"),
         DocPage("routing", "Routing"),
         DocPage("http", "Requests & Responses"),
+        DocPage("session", "Sessions"),
+        DocPage("authentication", "Authentication"),
         DocPage("container", "Service Container"),
         DocPage("views", "Views"),
         DocPage("validation", "Validation"),
         DocPage("database", "Database"),
+        DocPage("mail", "Mail"),
+        DocPage("queue", "Queues"),
+        DocPage("filesystem", "Filesystem"),
         DocPage("artisan", "Craft CLI")
     )
 

@@ -1,0 +1,23 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Sessions</h1>
+        <p>Every request gets a session cookie. The ID is HMAC-signed when <code class="inline">APP_KEY</code> is set. Drivers are <code class="inline">array</code> (in-memory, default for tests) and <code class="inline">file</code> (<code class="inline">storage/framework/sessions</code>).</p>
+
+        <h2>Helpers</h2>
+        <pre><code>request.session().put("theme", "dark")
+request.session().string("theme")
+session().get("theme")</code></pre>
+
+        <h2>CSRF</h2>
+        <p>Non-GET requests must send the session token as <code class="inline">_token</code>, <code class="inline">X-CSRF-TOKEN</code>, or <code class="inline">X-XSRF-TOKEN</code>. A mismatch returns HTTP 419. Views share a <code class="inline">csrf</code> variable after the session starts:</p>
+        @verbatim
+        <pre><code>&lt;input type="hidden" name="_token" value="{{ csrf }}"&gt;</code></pre>
+        @endverbatim
+        <p>Or emit the field from Kotlin with <code class="inline">csrfField()</code>.</p>
+    </article>
+</div>
+@endsection

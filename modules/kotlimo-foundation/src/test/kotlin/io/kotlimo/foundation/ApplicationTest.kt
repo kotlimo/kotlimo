@@ -35,6 +35,8 @@ class ApplicationTest {
         assertTrue(kernel.commands().containsKey("serve"))
         assertTrue(kernel.commands().containsKey("route:list"))
         assertTrue(kernel.commands().containsKey("make:controller"))
+        assertTrue(kernel.commands().containsKey("migrate"))
+        assertTrue(kernel.commands().containsKey("schedule:run"))
     }
 
     @Test

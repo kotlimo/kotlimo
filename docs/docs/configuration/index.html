@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Configuration - Kotlimo</title>
+    <meta name="description" content="Kotlimo is an open-source Kotlin web framework with an IoC container, routing, Kote views, a query builder, validation, and a Craft CLI.">
+    <link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+    <link rel="icon" href="/images/logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="/">
+                <img src="/images/logo.svg" alt="Kotlimo" width="28" height="28">
+                <span>Kotlimo</span>
+            </a>
+            <nav class="nav">
+                <a href="/docs" class=" is-active ">Docs</a>
+                <a href="/docs/artisan" class="">Craft</a>
+                <a href="https://github.com/kotlimo/kotlimo">GitHub</a>
+            </nav>
+            <div class="header-actions">
+                <a class="ghost" href="https://github.com/kotlimo/kotlimo">GitHub</a>
+                <a class="btn" href="/docs/installation">Get started</a>
+            </div>
+            <button class="menu-toggle" type="button" data-menu>Menu</button>
+        </div>
+    </header>
+    <main>
+        
+<div class="container docs-shell">
+    <nav class="docs-side" aria-label="Documentation">
+    <p class="eyebrow">Documentation</p>
+    
+    <a href="/docs/installation" class="">Installation</a>
+    
+    <a href="/docs/configuration" class=" is-active ">Configuration</a>
+    
+    <a href="/docs/routing" class="">Routing</a>
+    
+    <a href="/docs/http" class="">Requests &amp; Responses</a>
+    
+    <a href="/docs/session" class="">Sessions</a>
+    
+    <a href="/docs/authentication" class="">Authentication</a>
+    
+    <a href="/docs/container" class="">Service Container</a>
+    
+    <a href="/docs/views" class="">Views</a>
+    
+    <a href="/docs/validation" class="">Validation</a>
+    
+    <a href="/docs/database" class="">Database</a>
+    
+    <a href="/docs/mail" class="">Mail</a>
+    
+    <a href="/docs/queue" class="">Queues</a>
+    
+    <a href="/docs/filesystem" class="">Filesystem</a>
+    
+    <a href="/docs/artisan" class="">Craft CLI</a>
+    
+</nav>
+
+    <article class="docs-body">
+        <h1>Configuration</h1>
+        <p>JSON files in <code class="inline">config/</code> are loaded by name. Dot notation reads nested keys. Values from <code class="inline">.env</code> overlay the matching keys when both exist.</p>
+
+        <h2>Files that ship with an app</h2>
+        <ul>
+            <li><code class="inline">config/app.json</code> — name, env, debug, url, key</li>
+            <li><code class="inline">config/database.json</code> — JDBC url, username, password</li>
+            <li><code class="inline">config/session.json</code> — <code class="inline">array</code> or <code class="inline">file</code> driver</li>
+            <li><code class="inline">config/mail.json</code> — <code class="inline">log</code> or <code class="inline">array</code></li>
+            <li><code class="inline">config/queue.json</code> — <code class="inline">sync</code> or <code class="inline">array</code></li>
+            <li><code class="inline">config/filesystems.json</code> — local disk root</li>
+            <li><code class="inline">config/hash.json</code> — <code class="inline">bcrypt</code> or <code class="inline">argon2</code></li>
+        </ul>
+
+        <h2>Reading config</h2>
+        <pre><code>Config.string("app.name")
+Config.boolean("app.debug")
+Config.string("database.url")</code></pre>
+
+        <h2>Environment</h2>
+        <pre><code>APP_NAME=Kotlimo
+APP_ENV=local
+APP_KEY=
+DB_URL=jdbc:h2:mem:kotlimo;MODE=MySQL;DB_CLOSE_DELAY=-1
+SESSION_DRIVER=file
+QUEUE_DRIVER=sync
+MAIL_DRIVER=log
+HASH_DRIVER=bcrypt</code></pre>
+        <p>Generate a signing key with <code class="inline">./gradlew run --args='key:generate'</code>. An empty <code class="inline">APP_KEY</code> still starts locally; session cookies are unsigned until you set one.</p>
+    </article>
+</div>
+
+    </main>
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <a class="brand brand-light" href="/">
+                    <img src="/images/logo.svg" alt="" width="28" height="28">
+                    <span>Kotlimo</span>
+                </a>
+                <p class="footer-tagline">Open-source Kotlin web framework. Inspired by Laravel, built for the JVM.</p>
+            </div>
+            <div>
+                <h3>Framework</h3>
+                <a href="/docs/routing">Routing</a>
+                <a href="/docs/http">Requests &amp; Responses</a>
+                <a href="/docs/container">Service Container</a>
+                <a href="/docs/views">Views</a>
+                <a href="/docs/database">Database</a>
+                <a href="/docs/session">Sessions</a>
+                <a href="/docs/authentication">Authentication</a>
+            </div>
+            <div>
+                <h3>Resources</h3>
+                <a href="/docs">Documentation</a>
+                <a href="/docs/installation">Installation</a>
+                <a href="/docs/validation">Validation</a>
+                <a href="/docs/artisan">Craft CLI</a>
+                <a href="https://github.com/kotlimo/kotlimo/blob/main/LICENSE">MIT License</a>
+            </div>
+            <div>
+                <h3>Source</h3>
+                <a href="https://github.com/kotlimo/kotlimo">GitHub</a>
+                <a href="https://github.com/kotlimo/kotlimo/issues">Issues</a>
+                <a href="https://kotlimo.github.io">kotlimo.github.io</a>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>© 2026 Kotlimo. MIT License.</p>
+        </div>
+    </footer>
+    <script src="/js/app.js"></script>
+</body>
+</html>

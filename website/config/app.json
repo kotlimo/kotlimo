@@ -1,0 +1,7 @@
+{
+  "name": "Kotlimo",
+  "env": "local",
+  "debug": true,
+  "url": "http://127.0.0.1:8000",
+  "key": ""
+}

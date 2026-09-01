@@ -40,9 +40,15 @@
     
     <a href="/docs/installation" class="">Installation</a>
     
+    <a href="/docs/configuration" class="">Configuration</a>
+    
     <a href="/docs/routing" class="">Routing</a>
     
     <a href="/docs/http" class="">Requests &amp; Responses</a>
+    
+    <a href="/docs/session" class="">Sessions</a>
+    
+    <a href="/docs/authentication" class="">Authentication</a>
     
     <a href="/docs/container" class="">Service Container</a>
     
@@ -52,13 +58,19 @@
     
     <a href="/docs/database" class=" is-active ">Database</a>
     
+    <a href="/docs/mail" class="">Mail</a>
+    
+    <a href="/docs/queue" class="">Queues</a>
+    
+    <a href="/docs/filesystem" class="">Filesystem</a>
+    
     <a href="/docs/artisan" class="">Craft CLI</a>
     
 </nav>
 
     <article class="docs-body">
         <h1>Database</h1>
-        <p>Kotlimo includes a fluent query builder, Active Record models, schema blueprints, and migrations. The default connection is H2; point <code class="inline">DB_URL</code> at SQLite, MySQL, or PostgreSQL.</p>
+        <p>Kotlimo includes a fluent query builder, Active Record models, schema blueprints, and migrations. JDBC drivers for H2, SQLite, PostgreSQL, and MySQL are on the classpath. The default connection is in-memory H2; point <code class="inline">DB_URL</code> at another engine when you have a server.</p>
 
         <h2>Query builder</h2>
         <pre><code>DB.table("users")
@@ -86,6 +98,12 @@ User.find(user.id!!)</code></pre>
     string("email").unique()
     timestamps()
 }</code></pre>
+
+        <h2>Migrations</h2>
+        <p>JSON files in <code class="inline">database/migrations</code> are applied in filename order. A scaffolded app already has <code class="inline">0001_create_users_table.json</code>.</p>
+        <pre><code>./gradlew run --args='make:migration create_posts_table'
+./gradlew run --args='migrate'
+./gradlew run --args='migrate:rollback'</code></pre>
     </article>
 </div>
 
@@ -106,12 +124,14 @@ User.find(user.id!!)</code></pre>
                 <a href="/docs/container">Service Container</a>
                 <a href="/docs/views">Views</a>
                 <a href="/docs/database">Database</a>
-                <a href="/docs/validation">Validation</a>
+                <a href="/docs/session">Sessions</a>
+                <a href="/docs/authentication">Authentication</a>
             </div>
             <div>
                 <h3>Resources</h3>
                 <a href="/docs">Documentation</a>
                 <a href="/docs/installation">Installation</a>
+                <a href="/docs/validation">Validation</a>
                 <a href="/docs/artisan">Craft CLI</a>
                 <a href="https://github.com/kotlimo/kotlimo/blob/main/LICENSE">MIT License</a>
             </div>

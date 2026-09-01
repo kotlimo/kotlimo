@@ -1,0 +1,20 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Mail</h1>
+        <p>Mail does not require an SMTP server. The <code class="inline">log</code> driver writes a line to the application logger. The <code class="inline">array</code> driver stores messages in memory for tests.</p>
+
+        <pre><code>Mail.send("ada@example.com", "Welcome", "&lt;p&gt;Hello&lt;/p&gt;")
+
+Mail.send {
+    to("ada@example.com")
+    subject("Welcome")
+    html("&lt;p&gt;Hello&lt;/p&gt;")
+}</code></pre>
+        <p>Set <code class="inline">MAIL_DRIVER=array</code> in tests and inspect <code class="inline">app.make(ArrayMailer::class).messages</code>.</p>
+    </article>
+</div>
+@endsection

@@ -1,20 +1,28 @@
 package io.kotlimo.foundation.facades
 
+import io.kotlimo.auth.AuthManager
+import io.kotlimo.auth.Authenticatable
 import io.kotlimo.cache.CacheRepository
 import io.kotlimo.config.ConfigRepository
 import io.kotlimo.database.Connection
 import io.kotlimo.database.DatabaseManager
 import io.kotlimo.database.QueryBuilder
 import io.kotlimo.events.Dispatcher
+import io.kotlimo.filesystem.Filesystem
+import io.kotlimo.filesystem.FilesystemManager
 import io.kotlimo.foundation.Application
 import io.kotlimo.foundation.Facade
+import io.kotlimo.hash.Hash as HashHasher
 import io.kotlimo.http.Request
 import io.kotlimo.http.Response
 import io.kotlimo.logging.Logger
-import io.kotlimo.routing.Route
-import io.kotlimo.routing.RouteAction
+import io.kotlimo.mail.MailMessage
+import io.kotlimo.mail.Mailer
+import io.kotlimo.queue.Job
+import io.kotlimo.queue.QueueManager
 import io.kotlimo.routing.RouteHandler
 import io.kotlimo.routing.Router
+import io.kotlimo.session.Session
 import io.kotlimo.view.ViewEngine
 import kotlin.reflect.KClass
 
@@ -63,6 +71,15 @@ object DB : Facade() {
     fun select(sql: String, bindings: List<Any?> = emptyList()) = connection().select(sql, bindings)
 }
 
+object Schema : Facade() {
+    fun create(table: String, block: io.kotlimo.database.Blueprint.() -> Unit) =
+        io.kotlimo.database.Schema.create(table, block)
+
+    fun drop(table: String) = io.kotlimo.database.Schema.drop(table)
+
+    fun hasTable(table: String): Boolean = io.kotlimo.database.Schema.hasTable(table)
+}
+
 object Cache : Facade() {
     private fun repo() = app.make(CacheRepository::class)
     fun get(key: String, default: Any? = null): Any? = repo().get(key, default)
@@ -84,6 +101,55 @@ object Log : Facade() {
     fun debug(message: String) = logger().debug(message)
 }
 
+object Hash : Facade() {
+    fun make(value: String, algorithm: String = HashHasher.driver): String = HashHasher.make(value, algorithm)
+    fun check(value: String, hashed: String): Boolean = HashHasher.check(value, hashed)
+}
+
+object Auth : Facade() {
+    private fun manager() = app.make(AuthManager::class)
+    private fun request() = app.make(Request::class)
+    fun attempt(credentials: Map<String, Any?>): Boolean = manager().attempt(request(), credentials)
+    fun login(user: Authenticatable) = manager().login(request(), user)
+    fun logout() = manager().logout(request())
+    fun user(): Authenticatable? = if (app.bound(Request::class)) manager().user(request()) else null
+    fun check(): Boolean = user() != null
+    fun guest(): Boolean = user() == null
+    fun id(): Any? = user()?.getAuthIdentifier()
+}
+
+object Mail : Facade() {
+    private fun mailer() = app.make(Mailer::class)
+
+    fun send(message: MailMessage) = mailer().send(message)
+
+    fun send(to: String, subject: String, body: String) {
+        send(
+            MailMessage().to(to).subject(subject).html(body)
+        )
+    }
+
+    fun send(block: MailMessage.() -> Unit) {
+        send(MailMessage().apply(block))
+    }
+}
+
+object Queue : Facade() {
+    private fun manager() = app.make(QueueManager::class)
+    fun push(job: Job) = manager().push(job)
+    fun later(seconds: Long, job: Job) = manager().later(seconds, job)
+    fun pop(): Job? = manager().pop()
+}
+
+object Storage : Facade() {
+    private fun manager() = app.make(FilesystemManager::class)
+    fun disk(name: String? = null): Filesystem = manager().disk(name)
+    fun put(path: String, contents: String): Boolean = disk().put(path, contents)
+    fun get(path: String): String = disk().get(path)
+    fun exists(path: String): Boolean = disk().exists(path)
+    fun delete(path: String): Boolean = disk().delete(path)
+}
+
 fun view(name: String, data: Map<String, Any?> = emptyMap()): Response =
     Response.html(View.make(name, data))
 
@@ -92,3 +158,15 @@ fun view(name: String, vararg pairs: Pair<String, Any?>): Response = view(name, 
 fun redirect(uri: String): Response = Response.redirect(uri)
 
 fun abort(status: Int, message: String = "Error"): Nothing = io.kotlimo.http.abort(status, message)
+
+fun request(): Request = Facade.app.make(Request::class)
+
+fun session(): Session = request().session()
+
+fun user(): Authenticatable? = Auth.user()
+
+fun csrf(): String = request().csrf()
+
+fun csrfField(): String = """<input type="hidden" name="_token" value="${csrf()}">"""
+
+fun dispatch(job: Job) = Queue.push(job)

@@ -123,26 +123,55 @@ abstract class Migration {
     open val name: String get() = this::class.simpleName ?: "Migration"
 }
 
+object Schema {
+    fun builder(): SchemaBuilder {
+        val connection = Model.connection ?: throw IllegalStateException("No database connection is set")
+        return SchemaBuilder(connection)
+    }
+
+    fun create(table: String, block: Blueprint.() -> Unit) = builder().create(table, block)
+
+    fun drop(table: String) = builder().drop(table)
+
+    fun dropIfExists(table: String) = builder().dropIfExists(table)
+
+    fun hasTable(table: String): Boolean = builder().hasTable(table)
+}
+
 class Migrator(private val connection: Connection) {
     private val schema = SchemaBuilder(connection)
 
-    fun migrate(migrations: List<Migration>) {
+    fun migrate(migrations: List<Migration>): List<String> {
         ensureMigrationsTable()
         val ran = ran()
+        val batch = lastBatch() + 1
+        val executed = mutableListOf<String>()
         migrations.forEach { migration ->
             if (migration.name !in ran) {
                 migration.up(schema)
-                connection.table("migrations").insert(mapOf("migration" to migration.name))
+                connection.table("migrations").insert(mapOf("migration" to migration.name, "batch" to batch))
+                executed += migration.name
             }
         }
+        return executed
     }
 
-    fun rollback(migrations: List<Migration>) {
+    fun rollback(migrations: List<Migration>, steps: Int = 1): List<String> {
         ensureMigrationsTable()
-        migrations.reversed().forEach { migration ->
-            migration.down(schema)
-            connection.affectingStatement("DELETE FROM migrations WHERE migration = ?", listOf(migration.name))
+        val byName = migrations.associateBy { it.name }
+        val rolled = mutableListOf<String>()
+        repeat(steps.coerceAtLeast(1)) {
+            val batch = lastBatch()
+            if (batch == 0) return rolled
+            val rows = connection.table("migrations").where("batch", batch).get()
+            rows.asReversed().forEach { row ->
+                val name = row["migration"]?.toString() ?: return@forEach
+                byName[name]?.down(schema)
+                connection.table("migrations").where("migration", name).delete()
+                rolled += name
+            }
         }
+        return rolled
     }
 
     fun ran(): Set<String> {
@@ -150,10 +179,17 @@ class Migrator(private val connection: Connection) {
         return connection.table("migrations").get().mapNotNull { it["migration"]?.toString() }.toSet()
     }
 
+    fun lastBatch(): Int {
+        if (!schema.hasTable("migrations")) return 0
+        val value = connection.table("migrations").get().maxOfOrNull { (it["batch"] as? Number)?.toInt() ?: 0 } ?: 0
+        return value
+    }
+
     private fun ensureMigrationsTable() {
         schema.create("migrations") {
             id()
             string("migration")
+            integer("batch")
         }
     }
 }

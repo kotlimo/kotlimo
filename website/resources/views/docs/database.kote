@@ -5,7 +5,7 @@
     @include('partials.docs-side')
     <article class="docs-body">
         <h1>Database</h1>
-        <p>Kotlimo includes a fluent query builder, Active Record models, schema blueprints, and migrations. The default connection is H2; point <code class="inline">DB_URL</code> at SQLite, MySQL, or PostgreSQL.</p>
+        <p>Kotlimo includes a fluent query builder, Active Record models, schema blueprints, and migrations. JDBC drivers for H2, SQLite, PostgreSQL, and MySQL are on the classpath. The default connection is in-memory H2; point <code class="inline">DB_URL</code> at another engine when you have a server.</p>
 
         <h2>Query builder</h2>
         <pre><code>DB.table("users")
@@ -33,6 +33,12 @@ User.find(user.id!!)</code></pre>
     string("email").unique()
     timestamps()
 }</code></pre>
+
+        <h2>Migrations</h2>
+        <p>JSON files in <code class="inline">database/migrations</code> are applied in filename order. A scaffolded app already has <code class="inline">0001_create_users_table.json</code>.</p>
+        <pre><code>./gradlew run --args='make:migration create_posts_table'
+./gradlew run --args='migrate'
+./gradlew run --args='migrate:rollback'</code></pre>
     </article>
 </div>
 @endsection

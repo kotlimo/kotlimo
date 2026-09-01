@@ -8,12 +8,27 @@ class Response(
     var status: Int = 200,
     var content: String = "",
     val headers: MutableMap<String, String> = mutableMapOf(),
-    var contentBytes: ByteArray? = null
+    var contentBytes: ByteArray? = null,
+    val cookies: MutableList<Cookie> = mutableListOf()
 ) {
     fun header(key: String, value: String): Response {
         headers[key] = value
         return this
     }
+
+    fun cookie(cookie: Cookie): Response {
+        cookies += cookie
+        return this
+    }
+
+    fun cookie(
+        name: String,
+        value: String,
+        maxAge: Long? = null,
+        path: String = "/",
+        httpOnly: Boolean = true,
+        secure: Boolean = false
+    ): Response = cookie(Cookie(name, value, maxAge = maxAge, path = path, httpOnly = httpOnly, secure = secure))
 
     fun withHeaders(extra: Map<String, String>): Response {
         headers.putAll(extra)

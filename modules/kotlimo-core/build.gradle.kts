@@ -8,6 +8,8 @@ dependencies {
     api(libs.jackson.databind)
     api(libs.jackson.kotlin)
     api(libs.slf4j.api)
+    api(libs.bcrypt)
+    api(libs.bcprov)
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.launcher)
     testRuntimeOnly(libs.slf4j.simple)

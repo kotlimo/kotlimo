@@ -110,6 +110,9 @@ class EmbeddedServer(
         response.headers.forEach { (key, value) ->
             exchange.responseHeaders.add(key, value)
         }
+        response.cookies.forEach { cookie ->
+            exchange.responseHeaders.add("Set-Cookie", cookie.headerValue())
+        }
         val bytes = response.contentBytes ?: response.content.toByteArray(Charsets.UTF_8)
         val length = if (response.status == 204 || response.status == 304) -1 else bytes.size.toLong()
         exchange.sendResponseHeaders(response.status, length)

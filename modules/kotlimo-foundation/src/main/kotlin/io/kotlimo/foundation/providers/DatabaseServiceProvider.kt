@@ -29,5 +29,6 @@ class DatabaseServiceProvider(app: Application) : ServiceProvider(app) {
         Model.connection = manager.connection()
         app.instance(Connection::class, manager.connection())
         app.bind(SchemaBuilder::class) { SchemaBuilder(manager.connection()) }
+        app.instance(io.kotlimo.database.Migrator::class, io.kotlimo.database.Migrator(manager.connection()))
     }
 }

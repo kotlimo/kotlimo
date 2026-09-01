@@ -1,0 +1,22 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Queues</h1>
+        <p>Jobs implement <code class="inline">Job</code> and expose <code class="inline">handle()</code>. The <code class="inline">sync</code> driver runs work immediately. The <code class="inline">array</code> driver stores jobs in memory until <code class="inline">queue:work</code>.</p>
+
+        <pre><code>class WelcomeMail(val email: String) : Job {
+    override fun handle() {
+        Mail.send(email, "Welcome", "&lt;p&gt;Hi&lt;/p&gt;")
+    }
+}
+
+dispatch(WelcomeMail("ada@example.com"))
+Queue.push(WelcomeMail("ada@example.com"))</code></pre>
+        <pre><code>./gradlew run --args='queue:work --once'</code></pre>
+        <p>There is no Redis/database worker and no delayed retry backend. <code class="inline">later(seconds, job)</code> is honored by the array driver; sync still runs immediately.</p>
+    </article>
+</div>
+@endsection

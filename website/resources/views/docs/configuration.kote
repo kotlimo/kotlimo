@@ -1,0 +1,38 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Configuration</h1>
+        <p>JSON files in <code class="inline">config/</code> are loaded by name. Dot notation reads nested keys. Values from <code class="inline">.env</code> overlay the matching keys when both exist.</p>
+
+        <h2>Files that ship with an app</h2>
+        <ul>
+            <li><code class="inline">config/app.json</code> — name, env, debug, url, key</li>
+            <li><code class="inline">config/database.json</code> — JDBC url, username, password</li>
+            <li><code class="inline">config/session.json</code> — <code class="inline">array</code> or <code class="inline">file</code> driver</li>
+            <li><code class="inline">config/mail.json</code> — <code class="inline">log</code> or <code class="inline">array</code></li>
+            <li><code class="inline">config/queue.json</code> — <code class="inline">sync</code> or <code class="inline">array</code></li>
+            <li><code class="inline">config/filesystems.json</code> — local disk root</li>
+            <li><code class="inline">config/hash.json</code> — <code class="inline">bcrypt</code> or <code class="inline">argon2</code></li>
+        </ul>
+
+        <h2>Reading config</h2>
+        <pre><code>Config.string("app.name")
+Config.boolean("app.debug")
+Config.string("database.url")</code></pre>
+
+        <h2>Environment</h2>
+        <pre><code>APP_NAME=Kotlimo
+APP_ENV=local
+APP_KEY=
+DB_URL=jdbc:h2:mem:kotlimo;MODE=MySQL;DB_CLOSE_DELAY=-1
+SESSION_DRIVER=file
+QUEUE_DRIVER=sync
+MAIL_DRIVER=log
+HASH_DRIVER=bcrypt</code></pre>
+        <p>Generate a signing key with <code class="inline">./gradlew run --args='key:generate'</code>. An empty <code class="inline">APP_KEY</code> still starts locally; session cookies are unsigned until you set one.</p>
+    </article>
+</div>
+@endsection

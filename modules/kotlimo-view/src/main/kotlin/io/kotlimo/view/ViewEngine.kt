@@ -17,15 +17,23 @@ sealed class Node {
 
 class ViewEngine(private val paths: MutableList<Path> = mutableListOf()) {
     private val cache = mutableMapOf<String, List<Node>>()
+    private val shared = mutableMapOf<String, Any?>()
     var extension: String = ".kote"
 
     fun addLocation(path: Path) {
         paths.add(path)
     }
 
+    fun share(key: String, value: Any?) {
+        shared[key] = value
+    }
+
+    fun shared(): Map<String, Any?> = shared.toMap()
+
     fun exists(name: String): Boolean = find(name) != null
 
     fun render(name: String, data: Map<String, Any?> = emptyMap()): String {
+        val merged = shared + data
         val source = load(name)
         val ast = cache.getOrPut(name) { Parser(source).parse() }
         val sections = mutableMapOf<String, List<Node>>()
@@ -37,7 +45,7 @@ class ViewEngine(private val paths: MutableList<Path> = mutableListOf()) {
         } else {
             ast.filterNot { it is Node.Extends || it is Node.Section }
         }
-        return Renderer(this, data, sections).render(tree)
+        return Renderer(this, merged, sections).render(tree)
     }
 
     fun load(name: String): String {

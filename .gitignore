@@ -11,7 +11,10 @@ out/
 local.properties
 website/storage/logs/
 website/storage/cache/
+website/storage/framework/
+website/storage/app/
 website/database/*.db
+storage/
 .env
 .env.*
 !.env.example

@@ -15,12 +15,18 @@ class SiteExportCommand : Command() {
 
     private val docPages = listOf(
         "installation",
+        "configuration",
         "routing",
         "http",
+        "session",
+        "authentication",
         "container",
         "views",
         "validation",
         "database",
+        "mail",
+        "queue",
+        "filesystem",
         "artisan"
     )
 

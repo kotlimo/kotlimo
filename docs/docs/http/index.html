@@ -40,9 +40,15 @@
     
     <a href="/docs/installation" class="">Installation</a>
     
+    <a href="/docs/configuration" class="">Configuration</a>
+    
     <a href="/docs/routing" class="">Routing</a>
     
     <a href="/docs/http" class=" is-active ">Requests &amp; Responses</a>
+    
+    <a href="/docs/session" class="">Sessions</a>
+    
+    <a href="/docs/authentication" class="">Authentication</a>
     
     <a href="/docs/container" class="">Service Container</a>
     
@@ -51,6 +57,12 @@
     <a href="/docs/validation" class="">Validation</a>
     
     <a href="/docs/database" class="">Database</a>
+    
+    <a href="/docs/mail" class="">Mail</a>
+    
+    <a href="/docs/queue" class="">Queues</a>
+    
+    <a href="/docs/filesystem" class="">Filesystem</a>
     
     <a href="/docs/artisan" class="">Craft CLI</a>
     
@@ -78,7 +90,13 @@ view("home", mapOf("title" to "Kotlimo"))</code></pre>
     "email" to "required|email",
     "name" to "required|min:3"
 ))</code></pre>
-        <p>Failed validation throws <code class="inline">ValidationException</code> with per-field messages, matching Laravel's Form Request feel.</p>
+        <p>Failed validation throws <code class="inline">ValidationException</code> with per-field messages. JSON clients receive HTTP 422.</p>
+
+        <h2>Session, user, CSRF</h2>
+        <pre><code>request.session().put("locale", "en")
+request.user()
+request.csrf()</code></pre>
+        <p>See <a href="/docs/session">Sessions</a> and <a href="/docs/authentication">Authentication</a>.</p>
     </article>
 </div>
 
@@ -99,12 +117,14 @@ view("home", mapOf("title" to "Kotlimo"))</code></pre>
                 <a href="/docs/container">Service Container</a>
                 <a href="/docs/views">Views</a>
                 <a href="/docs/database">Database</a>
-                <a href="/docs/validation">Validation</a>
+                <a href="/docs/session">Sessions</a>
+                <a href="/docs/authentication">Authentication</a>
             </div>
             <div>
                 <h3>Resources</h3>
                 <a href="/docs">Documentation</a>
                 <a href="/docs/installation">Installation</a>
+                <a href="/docs/validation">Validation</a>
                 <a href="/docs/artisan">Craft CLI</a>
                 <a href="https://github.com/kotlimo/kotlimo/blob/main/LICENSE">MIT License</a>
             </div>

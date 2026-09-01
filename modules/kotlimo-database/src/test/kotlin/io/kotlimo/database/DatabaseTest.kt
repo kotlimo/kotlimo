@@ -142,4 +142,52 @@ class DatabaseTest {
         migrator.rollback(listOf(migration))
         assertFalse(SchemaBuilder(connection).hasTable("logs"))
     }
+
+    @Test
+    fun `jdbc drivers are on the classpath`() {
+        Class.forName("org.h2.Driver")
+        Class.forName("org.sqlite.JDBC")
+        Class.forName("org.postgresql.Driver")
+        Class.forName("com.mysql.cj.jdbc.Driver")
+    }
+
+    @Test
+    fun `sqlite connection can create tables`() {
+        val sqlite = Connection.connect("jdbc:sqlite:file:kotlimo_sqlite?mode=memory&cache=shared")
+        val schema = SchemaBuilder(sqlite)
+        schema.create("notes") {
+            integer("id")
+            string("body")
+        }
+        sqlite.table("notes").insert(mapOf("id" to 1, "body" to "hello"))
+        assertEquals("hello", sqlite.table("notes").first()?.get("body"))
+        sqlite.close()
+    }
+
+    @Test
+    fun `json migrations run from a directory`(@org.junit.jupiter.api.io.TempDir dir: java.nio.file.Path) {
+        val file = dir.resolve("0001_create_tags_table.json")
+        java.nio.file.Files.writeString(
+            file,
+            """
+            {
+              "name": "0001_create_tags_table",
+              "up": {
+                "create": "tags",
+                "columns": [
+                  {"name": "id", "type": "id"},
+                  {"name": "name", "type": "string", "unique": true}
+                ]
+              },
+              "down": { "drop": "tags" }
+            }
+            """.trimIndent()
+        )
+        val migrator = Migrator(connection)
+        val migrations = MigrationLoader.fromDirectory(dir)
+        migrator.migrate(migrations)
+        assertTrue(SchemaBuilder(connection).hasTable("tags"))
+        migrator.rollback(migrations)
+        assertFalse(SchemaBuilder(connection).hasTable("tags"))
+    }
 }

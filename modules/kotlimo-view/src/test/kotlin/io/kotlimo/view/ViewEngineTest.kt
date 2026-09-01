@@ -80,6 +80,13 @@ class ViewEngineTest {
     }
 
     @Test
+    fun `shared data is available to every view`() {
+        val view = engine("token" to "{{ csrf }}")
+        view.share("csrf", "abc123")
+        assertEquals("abc123", view.render("token"))
+    }
+
+    @Test
     fun `verbatim preserves blade-like examples`() {
         val view = engine("docs" to "@verbatim{{ name }}@endverbatim")
         assertEquals("{{ name }}", view.render("docs", mapOf("name" to "Ada")))

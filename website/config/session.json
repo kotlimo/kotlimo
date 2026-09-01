@@ -1,0 +1,6 @@
+{
+  "driver": "array",
+  "cookie": "kotlimo_session",
+  "lifetime": 120,
+  "path": "/"
+}

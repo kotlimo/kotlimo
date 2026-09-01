@@ -1,0 +1,31 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Authentication</h1>
+        <p>A session guard stores <code class="inline">login_id</code> after a successful attempt. Passwords are hashed with bcrypt (default) or argon2id via <code class="inline">Hash.make</code> / <code class="inline">Hash.check</code>. The default user provider reads the <code class="inline">users</code> table.</p>
+
+        <h2>Login and logout</h2>
+        <pre><code>Route.post("/login") { request ->
+    val ok = Auth.attempt(mapOf(
+        "email" to request.string("email"),
+        "password" to request.string("password")
+    ))
+    if (ok) redirect("/dashboard") else redirect("/login")
+}
+
+Route.post("/logout") {
+    Auth.logout()
+    redirect("/")
+}</code></pre>
+
+        <h2>The current user</h2>
+        <pre><code>request.user()
+Auth.check()
+user()?.getAuthIdentifier()</code></pre>
+        <p>Scaffolded apps include a <code class="inline">users</code> migration (<code class="inline">name</code>, <code class="inline">email</code>, <code class="inline">password</code>). Run <code class="inline">./gradlew run --args='migrate'</code> before attempting a login.</p>
+    </article>
+</div>
+@endsection

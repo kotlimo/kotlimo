@@ -21,6 +21,7 @@ include(
     "kotlimo-view",
     "kotlimo-foundation",
     "kotlimo-testing",
+    "kotlimo-console",
     "website"
 )
 
@@ -30,4 +31,5 @@ project(":kotlimo-database").projectDir = file("modules/kotlimo-database")
 project(":kotlimo-view").projectDir = file("modules/kotlimo-view")
 project(":kotlimo-foundation").projectDir = file("modules/kotlimo-foundation")
 project(":kotlimo-testing").projectDir = file("modules/kotlimo-testing")
+project(":kotlimo-console").projectDir = file("modules/kotlimo-console")
 project(":website").projectDir = file("website")

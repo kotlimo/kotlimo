@@ -1,0 +1,19 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Filesystem</h1>
+        <p>The local disk writes under <code class="inline">storage/app</code> (configurable in <code class="inline">config/filesystems.json</code>). Paths cannot escape the disk root.</p>
+
+        <pre><code>Storage.put("avatars/ada.txt", "hello")
+Storage.get("avatars/ada.txt")
+Storage.exists("avatars/ada.txt")
+Storage.delete("avatars/ada.txt")
+
+Storage.disk("local").put("notes/one.txt", "ok")</code></pre>
+        <p>Only the local driver is implemented. There is no S3 adapter.</p>
+    </article>
+</div>
+@endsection
