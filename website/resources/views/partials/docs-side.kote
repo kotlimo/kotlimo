@@ -1,0 +1,6 @@
+<nav class="docs-side" aria-label="Documentation">
+    <p class="eyebrow">Documentation</p>
+    @foreach(pages as item)
+    <a href="/docs/{{ item.slug }}" class="@if(current == item.slug) is-active @endif">{{ item.title }}</a>
+    @endforeach
+</nav>

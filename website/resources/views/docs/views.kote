@@ -1,0 +1,33 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Views</h1>
+        <p>Kote is a Blade-inspired template language. Layouts, sections, includes, conditionals, and loops compile to HTML with automatic escaping.</p>
+
+        <h2>Echoing data</h2>
+        @verbatim
+        <pre><code>{{ user.name }}
+{!! html !!}</code></pre>
+        @endverbatim
+
+        <h2>Layouts</h2>
+        @verbatim
+        <pre><code>@extends('layouts.app')
+
+@section('content')
+    <h1>{{ title }}</h1>
+    @foreach(posts as post)
+        <p>{{ post.title }}</p>
+    @endforeach
+@endsection</code></pre>
+        @endverbatim
+
+        <h2>Rendering</h2>
+        <pre><code>return view("home", mapOf("title" to "Kotlimo"))</code></pre>
+        <p>Templates live in <code class="inline">resources/views</code> with a <code class="inline">.kote</code> extension. Dotted names map to directories: <code class="inline">docs.routing</code> → <code class="inline">docs/routing.kote</code>.</p>
+    </article>
+</div>
+@endsection

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kotlimo - The Kotlin Framework for Web Artisans</title>
+    <meta name="description" content="Kotlimo is an open-source Kotlin web framework with an IoC container, routing, Kote views, a query builder, validation, and a Craft CLI.">
+    <link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+    <link rel="icon" href="/images/logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="/">
+                <img src="/images/logo.svg" alt="Kotlimo" width="28" height="28">
+                <span>Kotlimo</span>
+            </a>
+            <nav class="nav">
+                <a href="/docs" class="">Docs</a>
+                <a href="/docs/artisan" class="">Craft</a>
+                <a href="https://github.com/kotlimo/kotlimo">GitHub</a>
+            </nav>
+            <div class="header-actions">
+                <a class="ghost" href="https://github.com/kotlimo/kotlimo">GitHub</a>
+                <a class="btn" href="/docs/installation">Get started</a>
+            </div>
+            <button class="menu-toggle" type="button" data-menu>Menu</button>
+        </div>
+    </header>
+    <main>
+        
+<section class="hero">
+    <div class="container hero-grid">
+        <div>
+            <p class="eyebrow">Open source · JDK 21</p>
+            <h1>The Kotlin Framework<br><em>for Web Artisans</em></h1>
+            <p class="lede">Kotlimo is a web application framework with expressive, elegant syntax. It gives Kotlin an IoC container, routing, Blade-like views, an Eloquent-style ORM, validation, and a Craft CLI.</p>
+            <div class="hero-actions">
+                <div class="command" data-copy="./gradlew :website:run">
+                    <span class="prompt">$</span>
+                    <code>./gradlew :website:run</code>
+                    <button type="button" class="copy">Copy</button>
+                </div>
+                <a class="btn btn-lg" href="/docs/installation">Get started</a>
+            </div>
+        </div>
+        <aside class="editor" aria-label="Kotlimo code example">
+            <div class="editor-chrome">
+                <span></span><span></span><span></span>
+                <strong>routes/web.kt</strong>
+            </div>
+            <pre><code><span class="kw">Route</span>.get(<span class="str">"/users/{id}"</span>) { request ->
+    val user = <span class="kw">User</span>.findOrFail(request.route(<span class="str">"id"</span>))
+
+    <span class="kw">view</span>(<span class="str">"users.show"</span>, mapOf(
+        <span class="str">"user"</span> to user
+    ))
+}</code></pre>
+        </aside>
+    </div>
+</section>
+
+<section class="feature">
+    <div class="container feature-grid">
+        <div>
+            <h2>A progressive framework</h2>
+            <p>Kotlimo grows with you. Start with routing, views, and a service container. When you are ready, reach for Eloquent-style models, validation, migrations, caching, events, and the Craft CLI — without leaving the happy path.</p>
+            <ul class="checks">
+                <li>Expressive routing and middleware</li>
+                <li>Constructor auto-wiring IoC container</li>
+                <li>Query builder and Active Record models</li>
+                <li>Kote templates with Blade-like syntax</li>
+            </ul>
+        </div>
+        <div class="panel">
+            <pre><code><span class="kw">class</span> <span class="type">UserController</span> {
+    <span class="kw">fun</span> store(request: <span class="type">Request</span>): <span class="type">Response</span> {
+        val data = request.validate(mapOf(
+            <span class="str">"name"</span> to <span class="str">"required|string|max:255"</span>,
+            <span class="str">"email"</span> to <span class="str">"required|email"</span>
+        ))
+
+        val user = <span class="kw">User</span>.create(data)
+
+        <span class="kw">return</span> redirect(<span class="str">"/users/"</span> + user.id)
+    }
+}</code></pre>
+        </div>
+    </div>
+</section>
+
+<section class="feature feature-alt">
+    <div class="container feature-grid reverse">
+        <div class="panel">
+            <pre><code><span class="kw">class</span> <span class="type">User</span> : <span class="type">Model</span>() {
+    <span class="kw">override val</span> fillable = listOf(<span class="str">"name"</span>, <span class="str">"email"</span>)
+
+    <span class="kw">fun</span> posts() = hasMany(<span class="type">Post</span>::class)
+
+    <span class="kw">companion object</span> : <span class="type">ModelCompanion</span>&lt;<span class="type">User</span>&gt;(<span class="type">User</span>::class)
+}
+
+val user = <span class="kw">User</span>.find(1)
+val posts = user?.hasMany(<span class="type">Post</span>::class)</code></pre>
+        </div>
+        <div>
+            <h2>Eloquent-style database</h2>
+            <p>Talk to your database with a fluent query builder, or map tables to models with Active Record helpers, relationships, migrations, and schema blueprints. Tests run against H2 or SQLite in milliseconds.</p>
+            <a class="text-link" href="/docs/database">Explore the ORM →</a>
+        </div>
+    </div>
+</section>
+
+<section class="kits">
+    <div class="container">
+        <h2>What ships in the repo</h2>
+        <p class="section-copy">Kotlimo is a Gradle multi-module project. This documentation site is itself a Kotlimo application in <code class="inline">website/</code>.</p>
+        <div class="card-grid">
+            <article class="card">
+                <h3>HTTP &amp; routing</h3>
+                <p>Verbs, path parameters, named routes, groups, middleware, and an HTTP kernel.</p>
+                <a href="/docs/routing">Routing docs</a>
+            </article>
+            <article class="card">
+                <h3>Kote views</h3>
+                <p>Layouts, sections, includes, and Blade-like syntax compiled to escaped HTML.</p>
+                <a href="/docs/views">View docs</a>
+            </article>
+            <article class="card">
+                <h3>Craft CLI</h3>
+                <p>List routes, generate controllers and models, serve the app, or export this site.</p>
+                <a href="/docs/artisan">CLI docs</a>
+            </article>
+        </div>
+    </div>
+</section>
+
+    </main>
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <a class="brand brand-light" href="/">
+                    <img src="/images/logo.svg" alt="" width="28" height="28">
+                    <span>Kotlimo</span>
+                </a>
+                <p class="footer-tagline">Open-source Kotlin web framework. Inspired by Laravel, built for the JVM.</p>
+            </div>
+            <div>
+                <h3>Framework</h3>
+                <a href="/docs/routing">Routing</a>
+                <a href="/docs/http">Requests &amp; Responses</a>
+                <a href="/docs/container">Service Container</a>
+                <a href="/docs/views">Views</a>
+                <a href="/docs/database">Database</a>
+                <a href="/docs/validation">Validation</a>
+            </div>
+            <div>
+                <h3>Resources</h3>
+                <a href="/docs">Documentation</a>
+                <a href="/docs/installation">Installation</a>
+                <a href="/docs/artisan">Craft CLI</a>
+                <a href="https://github.com/kotlimo/kotlimo/blob/main/LICENSE">MIT License</a>
+            </div>
+            <div>
+                <h3>Source</h3>
+                <a href="https://github.com/kotlimo/kotlimo">GitHub</a>
+                <a href="https://github.com/kotlimo/kotlimo/issues">Issues</a>
+                <a href="https://kotlimo.github.io">kotlimo.github.io</a>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>© 2026 Kotlimo. MIT License.</p>
+        </div>
+    </footer>
+    <script src="/js/app.js"></script>
+</body>
+</html>

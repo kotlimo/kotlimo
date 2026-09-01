@@ -1,0 +1,40 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Craft CLI</h1>
+        <p>Craft is Kotlimo's Artisan-style command runner. It ships with the framework. Invoke it through Gradle — a standalone <code class="inline">kotlimo</code> binary is not published.</p>
+
+        <h2>Commands</h2>
+        <pre><code>./gradlew :website:run --args='list'
+./gradlew :website:run --args='serve --port=8000'
+./gradlew :website:run --args='route:list'
+./gradlew :website:run --args='make:controller UserController'
+./gradlew :website:run --args='make:model Post'
+./gradlew :website:run --args='site:export'</code></pre>
+
+        <h2>What they do</h2>
+        <ul>
+            <li><code class="inline">list</code> — show registered commands</li>
+            <li><code class="inline">serve</code> — start the Kotlin development server (default if you omit args)</li>
+            <li><code class="inline">route:list</code> — print HTTP routes</li>
+            <li><code class="inline">make:controller</code> / <code class="inline">make:model</code> — generate a starter class</li>
+            <li><code class="inline">site:export</code> — write static HTML for GitHub Pages into <code class="inline">docs/</code></li>
+        </ul>
+
+        <h2>Custom commands</h2>
+        <pre><code>class PingCommand : Command() {
+    override val signature = "ping"
+    override val description = "Print pong"
+    override fun handle(): Int {
+        line("pong")
+        return 0
+    }
+}
+
+app.make(ConsoleKernel::class).register(PingCommand())</code></pre>
+    </article>
+</div>
+@endsection

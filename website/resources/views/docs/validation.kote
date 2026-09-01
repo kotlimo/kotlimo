@@ -1,0 +1,22 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Validation</h1>
+        <p>Validate incoming request data with Laravel-style rule strings before it ever touches your models.</p>
+
+        <h2>Rules</h2>
+        <p>Supported rules include <code class="inline">required</code>, <code class="inline">email</code>, <code class="inline">min</code>, <code class="inline">max</code>, <code class="inline">integer</code>, <code class="inline">numeric</code>, <code class="inline">boolean</code>, <code class="inline">confirmed</code>, <code class="inline">in</code>, <code class="inline">url</code>, <code class="inline">same</code>, and <code class="inline">regex</code>.</p>
+        <pre><code>val validator = Validator.make(data, mapOf(
+    "email" to "required|email",
+    "password" to "required|min:8|confirmed"
+))
+
+if (validator.fails()) {
+    return Response.json(mapOf("errors" to validator.errors()), 422)
+}</code></pre>
+    </article>
+</div>
+@endsection

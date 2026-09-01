@@ -1,0 +1,29 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Service Container</h1>
+        <p>The container is the heart of Kotlimo. Bind interfaces, resolve constructors automatically, and reach services through facades.</p>
+
+        <h2>Bindings</h2>
+        <pre><code>app.bind(Mailer::class) { SmtpMailer() }
+app.singleton(ReportService::class) { ReportService(it.make()) }
+app.instance(Clock::class, Clock.systemUTC())
+
+val mailer = app.make&lt;Mailer&gt;()</code></pre>
+
+        <h2>Service providers</h2>
+        <p>Providers <code class="inline">register</code> bindings first, then <code class="inline">boot</code> once every service is available — the same two-phase lifecycle as Laravel.</p>
+        <pre><code>class EventServiceProvider(app: Application) : ServiceProvider(app) {
+    override fun boot() {
+        Event.listen(UserRegistered::class) { mailWelcome(it) }
+    }
+}</code></pre>
+
+        <h2>Facades</h2>
+        <p><code class="inline">Route</code>, <code class="inline">Config</code>, <code class="inline">DB</code>, <code class="inline">Cache</code>, <code class="inline">View</code>, <code class="inline">Event</code>, and <code class="inline">Log</code> proxy into the container after boot.</p>
+    </article>
+</div>
+@endsection

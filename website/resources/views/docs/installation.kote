@@ -1,0 +1,42 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Installation</h1>
+        <p>Kotlimo is an open-source Kotlin web framework. Clone the repository, run the tests, and boot the included website application.</p>
+
+        <h2>Requirements</h2>
+        <ul>
+            <li>JDK 21 or newer</li>
+            <li>The Gradle wrapper in this repository (<code class="inline">./gradlew</code>)</li>
+        </ul>
+
+        <h2>Clone and run</h2>
+        <pre><code>git clone https://github.com/kotlimo/kotlimo.git
+cd kotlimo
+./gradlew test
+./gradlew :website:run</code></pre>
+        <p>The development server starts at <code class="inline">http://127.0.0.1:8000</code>. This documentation site is the <code class="inline">website/</code> module — a Kotlimo application.</p>
+
+        <h2>Craft commands</h2>
+        <p>Craft is invoked through Gradle. There is no published <code class="inline">kotlimo</code> binary yet.</p>
+        <pre><code>./gradlew :website:run --args='list'
+./gradlew :website:run --args='route:list'
+./gradlew :website:run --args='make:controller PostsController'</code></pre>
+
+        <h2>Application skeleton</h2>
+        <pre><code>val app = Application.create(basePath)
+    .withDefaultProviders()
+    .boot()
+
+Route.get("/") { view("home", mapOf("title" to "Kotlimo")) }
+
+app.run(arrayOf("serve"))</code></pre>
+
+        <h2>Configuration</h2>
+        <p>Copy <code class="inline">website/.env.example</code> to <code class="inline">website/.env</code> for local overrides. Nested config is stored under <code class="inline">config/*.json</code> and read with dot notation: <code class="inline">Config.string("app.name")</code>.</p>
+    </article>
+</div>
+@endsection

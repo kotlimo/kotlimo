@@ -1,0 +1,31 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Requests &amp; Responses</h1>
+        <p>Every inbound HTTP message becomes a <code class="inline">Request</code>. Controllers return a <code class="inline">Response</code>, a string, or any JSON-serializable value.</p>
+
+        <h2>Reading input</h2>
+        <pre><code>request.input("email")
+request.string("name")
+request.only("name", "email")
+request.header("Accept")
+request.route("id")</code></pre>
+
+        <h2>Returning responses</h2>
+        <pre><code>Response.html("&lt;h1&gt;Hello&lt;/h1&gt;")
+Response.json(mapOf("ok" to true))
+Response.redirect("/login")
+view("home", mapOf("title" to "Kotlimo"))</code></pre>
+
+        <h2>Validation</h2>
+        <pre><code>val data = request.validate(mapOf(
+    "email" to "required|email",
+    "name" to "required|min:3"
+))</code></pre>
+        <p>Failed validation throws <code class="inline">ValidationException</code> with per-field messages, matching Laravel's Form Request feel.</p>
+    </article>
+</div>
+@endsection

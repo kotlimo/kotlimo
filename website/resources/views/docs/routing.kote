@@ -1,0 +1,35 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container docs-shell">
+    @include('partials.docs-side')
+    <article class="docs-body">
+        <h1>Routing</h1>
+        <p>Define application routes with HTTP verbs, path parameters, names, groups, and middleware — the same mental model as Laravel.</p>
+
+        <h2>Basic routes</h2>
+        <pre><code>Route.get("/") { Response.html("Hello Kotlimo") }
+Route.post("/users") { request -> /* ... */ }
+Route.get("/users/{id}") { request ->
+    Response.json(mapOf("id" to request.route("id")))
+}</code></pre>
+
+        <h2>Controllers</h2>
+        <pre><code>Route.get("/users/{id}", UserController::class, "show")
+
+class UserController {
+    fun show(request: Request, id: Int): Response {
+        return view("users.show", mapOf("id" to id))
+    }
+}</code></pre>
+
+        <h2>Route groups</h2>
+        <pre><code>Route.group(prefix = "api", name = "api.") {
+    get("/users") { Response.json(User.all()) }.named("users")
+}</code></pre>
+
+        <h2>Middleware</h2>
+        <p>Global middleware runs on every request. Route middleware wraps a single route or group through the same pipeline used by Laravel's HTTP kernel.</p>
+    </article>
+</div>
+@endsection
