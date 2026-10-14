@@ -1,16 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="hero" data-hero>
-    <div class="orb orb-a"></div>
-    <div class="orb orb-b"></div>
-    <div class="orb orb-c"></div>
-    <img class="hero-mark" src="/images/logo.svg" alt="">
+<section class="hero">
     <div class="container hero-grid">
-        <div class="hero-copy" data-reveal>
-            <p class="eyebrow">Open source · JDK 21</p>
+        <div class="hero-copy">
+            <p class="kicker">Open source · JDK 21</p>
             <h1>The Kotlin Framework<br><em>for Web Artisans</em></h1>
-            <p class="lede">Kotlimo is a web application framework with expressive, elegant syntax. Routing, Kote views, an Eloquent-style ORM, sessions, CSRF, auth, validation, queues, mail, and Craft — on the JVM.</p>
+            <p class="lede">Expressive routing, Kote views, an Eloquent-style ORM, sessions, auth, and Craft. One layout, so an app starts in a known place.</p>
             <div class="hero-actions">
                 <div class="command" data-copy="./kotlimo new blog">
                     <span class="prompt">$</span>
@@ -25,9 +21,9 @@
             <div class="editor-chrome">
                 <span></span><span></span><span></span>
                 <div class="stage-tabs" role="tablist">
-                    <button type="button" class="is-active" data-tab="0">routes/web.kt</button>
-                    <button type="button" data-tab="1">Auth.kt</button>
-                    <button type="button" data-tab="2">Post.kt</button>
+                    <button type="button" class="is-active" role="tab" aria-selected="true" data-tab="0">routes/web.kt</button>
+                    <button type="button" role="tab" aria-selected="false" data-tab="1">Auth.kt</button>
+                    <button type="button" role="tab" aria-selected="false" data-tab="2">Post.kt</button>
                 </div>
             </div>
             <div class="stage-panes">
@@ -46,8 +42,7 @@
 ), remember = <span class="kw">true</span>)
 
 <span class="kw">val</span> current = <span class="kw">Auth</span>.user() ?: <span class="kw">return</span> redirect(<span class="str">"/login"</span>)
-<span class="kw">val</span> token = <span class="kw">Auth</span>.createToken(current)
-<span class="cm">// Authorization: Bearer …</span></code></pre>
+<span class="kw">Auth</span>.createToken(current)</code></pre>
                 <pre class="stage-pane" data-pane="2"><code><span class="kw">class</span> <span class="type">Post</span> : <span class="type">Model</span>() {
     <span class="kw">override val</span> fillable = listOf(<span class="str">"title"</span>, <span class="str">"body"</span>)
     <span class="kw">override val</span> softDeletes = <span class="kw">true</span>
@@ -56,71 +51,82 @@
     <span class="kw">companion object</span> : <span class="type">ModelCompanion</span>&lt;<span class="type">Post</span>&gt;(<span class="type">Post</span>::class)
 }</code></pre>
             </div>
-            <div class="stage-progress" aria-hidden="true"><span data-progress></span></div>
         </aside>
     </div>
 </section>
 
-<div class="marquee" aria-hidden="true">
-    <div class="marquee-track">
-        <span>Routing</span><span>Kote views</span><span>Eloquent-style ORM</span><span>Sessions</span><span>CSRF</span><span>Authentication</span><span>API tokens</span><span>Policies</span><span>Validation</span><span>Queues</span><span>Mail</span><span>Filesystem</span><span>Craft CLI</span><span>Jetty</span>
-        <span>Routing</span><span>Kote views</span><span>Eloquent-style ORM</span><span>Sessions</span><span>CSRF</span><span>Authentication</span><span>API tokens</span><span>Policies</span><span>Validation</span><span>Queues</span><span>Mail</span><span>Filesystem</span><span>Craft CLI</span><span>Jetty</span>
+<section class="band">
+    <div class="container chip-row">
+        <span>Routing</span>
+        <span>Kote views</span>
+        <span>ORM</span>
+        <span>Sessions</span>
+        <span>CSRF</span>
+        <span>Auth</span>
+        <span>API tokens</span>
+        <span>Policies</span>
+        <span>Validation</span>
+        <span>Queues</span>
+        <span>Mail</span>
+        <span>Filesystem</span>
+        <span>Craft</span>
+        <span>Jetty</span>
     </div>
-</div>
+</section>
 
-<section class="bento">
+<section class="showcase">
     <div class="container">
-        <div class="section-head" data-reveal>
-            <h2>One layout. Every command prints its path.</h2>
-            <p>An agent following AGENTS.md adds a model, migration, controller, policy, and test without choosing a folder.</p>
+        <div class="section-head">
+            <h2>A calm path from new app to running site.</h2>
+            <p><code class="inline">./kotlimo new blog</code> writes register, login, password reset, remember-me, a posts example, and a feature test.</p>
         </div>
-        <div class="bento-grid">
-            <article class="tile tile-wide" data-reveal>
-                <p class="tile-kicker">Scaffold</p>
-                <h3>Register, login, and a posts example</h3>
-                <p><code class="inline">./kotlimo new blog</code> writes routes, views, a users migration, password reset, remember-me, and a feature test.</p>
-                <div class="mock">
-                    <div class="mock-card mock-a">
-                        <strong>Login</strong>
-                        <span></span><span></span>
-                        <em>Remember me</em>
-                    </div>
-                    <div class="mock-card mock-b">
-                        <strong>Posts</strong>
-                        <b>Hello</b>
-                        <small>World</small>
-                    </div>
-                </div>
-            </article>
-            <article class="tile" data-reveal>
-                <p class="tile-kicker">HTTP</p>
-                <h3>Routes that read like the URL</h3>
+        <ol class="steps">
+            <li>
+                <span>01</span>
+                <strong>Create</strong>
+                <code>./kotlimo new blog</code>
+            </li>
+            <li>
+                <span>02</span>
+                <strong>Test</strong>
+                <code>./gradlew test</code>
+            </li>
+            <li>
+                <span>03</span>
+                <strong>Serve</strong>
+                <code>./gradlew run</code>
+            </li>
+        </ol>
+        <div class="card-grid home-cards">
+            <article class="home-card">
+                <h3>Routing</h3>
                 <p>Verbs, parameters, named routes, groups, and middleware on one kernel.</p>
-                <a href="/docs/routing">Routing →</a>
+                <a href="/docs/routing">Read the routing docs</a>
             </article>
-            <article class="tile" data-reveal>
-                <p class="tile-kicker">Views</p>
-                <h3>Kote, Blade-like</h3>
-                <p>Layouts, sections, includes, and escaped HTML.</p>
-                <a href="/docs/views">Views →</a>
+            <article class="home-card">
+                <h3>Kote views</h3>
+                <p>Layouts, sections, and includes, rendered as escaped HTML.</p>
+                <a href="/docs/views">Read the view docs</a>
             </article>
-            <article class="tile" data-reveal>
-                <p class="tile-kicker">Data</p>
-                <h3>Models with a query builder</h3>
-                <p>Casts, eager <code class="inline">with()</code>, soft deletes, and JSON migrations. Tests use H2 or SQLite.</p>
-                <a href="/docs/database">Database →</a>
+            <article class="home-card">
+                <h3>Database</h3>
+                <p>Query builder, casts, eager <code class="inline">with()</code>, soft deletes, and JSON migrations.</p>
+                <a href="/docs/database">Read the database docs</a>
             </article>
-            <article class="tile" data-reveal>
-                <p class="tile-kicker">Auth</p>
-                <h3>Sessions and bearer tokens</h3>
-                <p>HTML uses the session guard. JSON routes send <code class="inline">Authorization: Bearer</code>.</p>
-                <a href="/docs/authentication">Authentication →</a>
+            <article class="home-card">
+                <h3>Authentication</h3>
+                <p>Session login for HTML. Bearer tokens for JSON routes.</p>
+                <a href="/docs/authentication">Read the auth docs</a>
             </article>
-            <article class="tile tile-lime" data-reveal>
-                <p class="tile-kicker">Ship</p>
-                <h3>Jetty, Docker, <code class="inline">/health</code></h3>
-                <p>Defaults stay log, sync, array, and local. Turn on SMTP, Redis, a database queue, or S3 when those services exist.</p>
-                <a href="/docs/artisan">Craft CLI →</a>
+            <article class="home-card">
+                <h3>Validation</h3>
+                <p>Required, email, confirmed, unique, and exists rules on the request body.</p>
+                <a href="/docs/validation">Read the validation docs</a>
+            </article>
+            <article class="home-card">
+                <h3>Production</h3>
+                <p>Jetty, Docker, and <code class="inline">/health</code>. SMTP, Redis, and S3 stay optional.</p>
+                <a href="/docs/artisan">Read the Craft docs</a>
             </article>
         </div>
     </div>
