@@ -1,8 +1,8 @@
 package io.kotlimo.console
 
 import io.kotlimo.foundation.Application
-import io.kotlimo.http.EmbeddedServer
 import io.kotlimo.http.HttpKernel
+import io.kotlimo.http.JettyServer
 import java.nio.file.Files
 
 abstract class Command {
@@ -99,7 +99,7 @@ class ServeCommand : Command() {
         val port = option("port", "8000")?.toIntOrNull() ?: 8000
         line("Kotlimo development server started: http://$host:$port")
         val kernel = app.make(HttpKernel::class)
-        EmbeddedServer(kernel, host, port).start(block = true)
+        JettyServer(kernel, host, port).start(block = true)
         return 0
     }
 }
@@ -128,18 +128,22 @@ class MakeControllerCommand : Command() {
 
     override fun handle(): Int {
         val name = argument("name") ?: run {
-            error("Controller name is required")
+            error("Controller name is required. Run make:controller {name}.")
             return 1
         }
-        val directory = app.path("src", "main", "kotlin").resolve("controllers")
-        Files.createDirectories(directory)
-        val file = directory.resolve("$name.kt")
+        val modern = usesAppLayout()
+        val file = if (modern) {
+            kotlinFile("app", "http", "controllers", "$name.kt")
+        } else {
+            kotlinFile("controllers", "$name.kt")
+        }
         if (Files.exists(file)) {
             error("Controller already exists: $file")
             return 1
         }
+        val pkg = if (modern) "package app.http.controllers\n\n" else ""
         val content = """
-            class $name {
+            ${pkg}class $name {
                 fun index(request: io.kotlimo.http.Request): io.kotlimo.http.Response {
                     return io.kotlimo.http.Response.json(mapOf("message" to "$name"))
                 }
@@ -147,25 +151,33 @@ class MakeControllerCommand : Command() {
         """.trimIndent()
         Files.writeString(file, content)
         info("Controller created: $file")
+        if (modern) {
+            val test = writeFeatureTest(name)
+            info("Feature test created: $test")
+        }
         return 0
     }
 }
 
 class MakeModelCommand : Command() {
     override val signature = "make:model {name}"
-    override val description = "Create a new Eloquent-style model class"
+    override val description = "Create a new model class"
 
     override fun handle(): Int {
         val name = argument("name") ?: run {
-            error("Model name is required")
+            error("Model name is required. Run make:model {name}.")
             return 1
         }
-        val directory = app.path("src", "main", "kotlin").resolve("models")
-        Files.createDirectories(directory)
-        val file = directory.resolve("$name.kt")
+        val modern = usesAppLayout()
+        val file = if (modern) kotlinFile("app", "models", "$name.kt") else kotlinFile("models", "$name.kt")
+        if (Files.exists(file)) {
+            error("Model already exists: $file")
+            return 1
+        }
         val table = io.kotlimo.support.Inflector.tableize(name)
+        val pkg = if (modern) "package app.models\n\n" else ""
         val content = """
-            import io.kotlimo.database.Model
+            ${pkg}import io.kotlimo.database.Model
             import io.kotlimo.database.ModelCompanion
 
             class $name : Model() {
@@ -181,10 +193,108 @@ class MakeModelCommand : Command() {
     }
 }
 
+class MakeRequestCommand : Command() {
+    override val signature = "make:request {name}"
+    override val description = "Create a form request rules class"
+
+    override fun handle(): Int {
+        val name = argument("name") ?: run {
+            error("Request name is required. Run make:request {name}.")
+            return 1
+        }
+        val modern = usesAppLayout()
+        val file = if (modern) kotlinFile("app", "http", "requests", "$name.kt") else kotlinFile("requests", "$name.kt")
+        if (Files.exists(file)) {
+            error("Request already exists: $file")
+            return 1
+        }
+        val pkg = if (modern) "package app.http.requests\n\n" else ""
+        val content = """
+            ${pkg}class $name {
+                fun rules(): Map<String, String> = mapOf(
+                    "title" to "required|string|max:255"
+                )
+            }
+        """.trimIndent()
+        Files.writeString(file, content)
+        info("Request created: $file")
+        return 0
+    }
+}
+
+class MakePolicyCommand : Command() {
+    override val signature = "make:policy {name}"
+    override val description = "Create a policy class"
+
+    override fun handle(): Int {
+        val name = argument("name") ?: run {
+            error("Policy name is required. Run make:policy {name}.")
+            return 1
+        }
+        val modern = usesAppLayout()
+        val file = if (modern) kotlinFile("app", "policies", "$name.kt") else kotlinFile("policies", "$name.kt")
+        if (Files.exists(file)) {
+            error("Policy already exists: $file")
+            return 1
+        }
+        val pkg = if (modern) "package app.policies\n\n" else ""
+        val content = """
+            ${pkg}import io.kotlimo.auth.Authenticatable
+            import io.kotlimo.auth.Policy
+
+            class $name : Policy {
+                override fun allows(user: Authenticatable?, ability: String, model: Any?): Boolean {
+                    return user != null
+                }
+            }
+        """.trimIndent()
+        Files.writeString(file, content)
+        info("Policy created: $file")
+        return 0
+    }
+}
+
+private fun Command.usesAppLayout(): Boolean =
+    Files.exists(app.basePath.resolve("routes").resolve("web.kt"))
+
+private fun Command.kotlinFile(vararg parts: String): java.nio.file.Path {
+    val file = parts.fold(app.path("src", "main", "kotlin")) { path, part -> path.resolve(part) }
+    Files.createDirectories(file.parent)
+    return file
+}
+
+private fun Command.writeFeatureTest(controller: String): java.nio.file.Path {
+    val file = app.path("tests").resolve("${controller}Test.kt")
+    Files.createDirectories(file.parent)
+    val content = """
+        package app
+
+        import io.kotlimo.testing.HttpTestCase
+        import org.junit.jupiter.api.BeforeEach
+        import org.junit.jupiter.api.Test
+
+        class ${controller}Test : HttpTestCase() {
+            @BeforeEach
+            fun setUp() {
+                app = createApp()
+            }
+
+            @Test
+            fun `home responds`() {
+                get("/health").assertOk()
+            }
+        }
+    """.trimIndent() + "\n"
+    Files.writeString(file, content)
+    return file
+}
+
 fun consoleKernel(app: Application): ConsoleKernel = ConsoleKernel(app).apply {
     register(HelpCommand(emptyMap()))
     register(ServeCommand())
     register(RouteListCommand())
     register(MakeControllerCommand())
     register(MakeModelCommand())
+    register(MakeRequestCommand())
+    register(MakePolicyCommand())
 }

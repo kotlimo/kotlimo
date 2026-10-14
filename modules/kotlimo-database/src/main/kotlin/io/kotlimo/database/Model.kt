@@ -11,6 +11,9 @@ abstract class Model {
     open val fillable: List<String> = emptyList()
     open val guarded: List<String> = listOf("id")
     open val timestamps: Boolean = true
+    open val softDeletes: Boolean = false
+    open val casts: Map<String, String> = emptyMap()
+    val relations: MutableMap<String, Any?> = mutableMapOf()
 
     var exists: Boolean = false
     val attributes: MutableMap<String, Any?> = mutableMapOf()
@@ -20,14 +23,15 @@ abstract class Model {
         get() = Companion.connection
         set(value) { Companion.connection = value }
 
-    operator fun get(key: String): Any? = attributes[key]
+    operator fun get(key: String): Any? = relations[key] ?: getAttribute(key)
     operator fun set(key: String, value: Any?) {
-        attributes[key] = value
+        setAttribute(key, value)
     }
 
-    fun getAttribute(key: String): Any? = attributes[key]
+    fun getAttribute(key: String): Any? = castOut(key, attributes[key])
+
     fun setAttribute(key: String, value: Any?) {
-        attributes[key] = value
+        attributes[key] = castIn(key, value)
     }
 
     val id: Any?
@@ -35,7 +39,7 @@ abstract class Model {
 
     fun fill(values: Map<String, Any?>): Model {
         values.forEach { (key, value) ->
-            if (isFillable(key)) attributes[key] = value
+            if (isFillable(key)) setAttribute(key, value)
         }
         return this
     }
@@ -84,10 +88,23 @@ abstract class Model {
 
     fun delete(): Boolean {
         if (!exists) return false
+        if (softDeletes) {
+            attributes["deleted_at"] = java.time.LocalDateTime.now().toString()
+            save()
+            return true
+        }
         requireConnection().table(table).where(primaryKey, id).delete()
         exists = false
         return true
     }
+
+    fun restore(): Boolean {
+        if (!softDeletes) return false
+        attributes["deleted_at"] = null
+        return save()
+    }
+
+    fun trashed(): Boolean = softDeletes && attributes["deleted_at"] != null
 
     fun toMap(): Map<String, Any?> = attributes.toMap()
 
@@ -121,6 +138,23 @@ abstract class Model {
         }
     }
 
+    private fun castIn(key: String, value: Any?): Any? = when (casts[key]) {
+        "json" -> if (value is String) value else io.kotlimo.support.Json.encode(value)
+        else -> value
+    }
+
+    private fun castOut(key: String, value: Any?): Any? = when (casts[key]) {
+        "int", "integer" -> (value as? Number)?.toInt() ?: value?.toString()?.toIntOrNull()
+        "bool", "boolean" -> when (value) {
+            is Boolean -> value
+            is Number -> value.toInt() != 0
+            is String -> value.lowercase() in setOf("1", "true", "yes")
+            else -> value
+        }
+        "json" -> if (value is String && value.isNotBlank()) io.kotlimo.support.Json.decode(value) else value
+        else -> value
+    }
+
     internal fun requireConnection(): Connection =
         connection ?: throw IllegalStateException("No database connection is set for ${this::class.simpleName}")
 
@@ -138,6 +172,14 @@ open class ModelCompanion<T : Model>(private val type: KClass<T>) {
     fun newInstance(): T = type.java.getDeclaredConstructor().newInstance()
 
     fun query(): QueryBuilder {
+        val model = newInstance()
+        val conn = Model.connection ?: throw IllegalStateException("No database connection is set")
+        val builder = QueryBuilder(conn, model.table, type)
+        if (model.softDeletes) builder.whereNull("deleted_at")
+        return builder
+    }
+
+    fun withTrashed(): QueryBuilder {
         val model = newInstance()
         val conn = Model.connection ?: throw IllegalStateException("No database connection is set")
         return QueryBuilder(conn, model.table, type)

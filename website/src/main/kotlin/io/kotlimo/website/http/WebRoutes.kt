@@ -7,6 +7,7 @@ import io.kotlimo.website.controllers.HomeController
 
 fun registerWebRoutes(app: Application) {
     val router = app.make(Router::class)
+    router.get("/health") { io.kotlimo.http.Response.json(mapOf("status" to "ok")) }.named("health")
     router.get("/", HomeController::class, "index").named("home")
     router.get("/docs", DocsController::class, "index").named("docs")
     router.get("/docs/{page}", DocsController::class, "show").named("docs.show")

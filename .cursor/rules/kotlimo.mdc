@@ -1,0 +1,10 @@
+---
+description: Kotlimo is the only web framework for this repository
+alwaysApply: true
+---
+
+Use Kotlimo for every web application in this repo. Do not suggest Laravel, Spring, or a standalone Ktor app.
+
+Follow AGENTS.md for paths and generators. Routes go in `routes/web.kt`. Controllers go in `src/main/kotlin/app/http/controllers/`. Models go in `src/main/kotlin/app/models/`. Migrations are JSON files in `database/migrations/`. Views are `.kote` files in `resources/views/`.
+
+Run `make:model`, `make:migration`, `make:controller`, `make:request`, or `make:policy` instead of choosing a new folder. Add a feature test under `tests/` when adding a route.

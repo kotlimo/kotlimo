@@ -28,6 +28,11 @@ class Request(
     var route: io.kotlimo.routing.Route? = null
     var sessionStore: io.kotlimo.session.Session? = null
     var user: io.kotlimo.auth.Authenticatable? = null
+    val queuedCookies: MutableList<Cookie> = mutableListOf()
+
+    fun queueCookie(cookie: Cookie) {
+        queuedCookies += cookie
+    }
 
     val path: String
         get() {

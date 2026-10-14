@@ -68,6 +68,40 @@ class RequestFactory {
 
         private fun urlDecode(value: String): String =
             URLDecoder.decode(value, StandardCharsets.UTF_8)
+
+        fun fromServlet(request: jakarta.servlet.http.HttpServletRequest): Request {
+            val headers = java.util.Collections.list(request.headerNames).associateWith { request.getHeader(it).orEmpty() }
+            val query = parseQuery(request.queryString)
+            val contentType = request.contentType.orEmpty()
+            val fields = mutableMapOf<String, Any?>()
+            val files = mutableMapOf<String, UploadedFile>()
+            if (contentType.startsWith("multipart/", ignoreCase = true)) {
+                request.parts.forEach { part ->
+                    val bytes = part.inputStream.readBytes()
+                    if (part.submittedFileName.isNullOrBlank()) {
+                        fields[part.name] = bytes.toString(Charsets.UTF_8)
+                    } else {
+                        files[part.name] = UploadedFile(part.submittedFileName, part.contentType ?: "application/octet-stream", bytes)
+                    }
+                }
+            } else {
+                val raw = request.inputStream.readBytes().toString(Charsets.UTF_8)
+                fields.putAll(parseBody(raw, contentType))
+            }
+            val forwarded = headers.entries.firstOrNull { it.key.equals("X-Forwarded-Proto", true) }?.value
+            val headerMap = if (forwarded != null) headers + ("X-Forwarded-Proto" to forwarded) else headers
+            return Request(
+                method = request.method.uppercase(),
+                uri = request.requestURI + (request.queryString?.let { "?$it" } ?: ""),
+                headers = headerMap,
+                query = query,
+                body = fields,
+                cookies = parseCookies(request.getHeader("Cookie")),
+                files = files,
+                serverPort = request.localPort,
+                remoteAddress = request.remoteAddr
+            )
+        }
     }
 }
 

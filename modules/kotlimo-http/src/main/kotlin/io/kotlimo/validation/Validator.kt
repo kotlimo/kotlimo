@@ -52,6 +52,8 @@ class Validator(
             "url" -> value == null || (value is String && (value.startsWith("http://") || value.startsWith("https://")))
             "regex" -> value == null || (value is String && Regex(parameters.joinToString(":")).containsMatchIn(value))
             "array" -> value == null || value is Collection<*> || value is Array<*>
+            "unique" -> isUnique(attribute, value, parameters)
+            "exists" -> doesExist(attribute, value, parameters)
             else -> true
         }
         if (!ok) {
@@ -83,6 +85,24 @@ class Validator(
         else -> true
     }
 
+    private fun isUnique(attribute: String, value: Any?, parameters: List<String>): Boolean {
+        if (value == null) return true
+        val table = parameters.firstOrNull() ?: return false
+        val column = parameters.getOrElse(1) { attribute }
+        val checker = DatabaseRules.exists
+            ?: throw IllegalStateException("unique requires a database. Boot DatabaseServiceProvider before validate().")
+        return !checker(table, column, value)
+    }
+
+    private fun doesExist(attribute: String, value: Any?, parameters: List<String>): Boolean {
+        if (value == null) return true
+        val table = parameters.firstOrNull() ?: return false
+        val column = parameters.getOrElse(1) { attribute }
+        val checker = DatabaseRules.exists
+            ?: throw IllegalStateException("exists requires a database. Boot DatabaseServiceProvider before validate().")
+        return checker(table, column, value)
+    }
+
     private fun messageFor(attribute: String, rule: String, parameters: List<String>): String {
         customMessages["$attribute.$rule"]?.let { return it }
         val field = attribute.replace('_', ' ')
@@ -97,6 +117,8 @@ class Validator(
             "numeric" -> "The $field must be a number."
             "string" -> "The $field must be a string."
             "url" -> "The $field must be a valid URL."
+            "unique" -> "The $field has already been taken."
+            "exists" -> "The selected $field is invalid."
             else -> "The $field is invalid."
         }
     }
@@ -117,6 +139,10 @@ class Validator(
         fun parseRules(rules: String): List<String> =
             rules.split('|').map { it.trim() }.filter { it.isNotEmpty() }
     }
+}
+
+object DatabaseRules {
+    var exists: ((table: String, column: String, value: Any?) -> Boolean)? = null
 }
 
 fun validate(data: Map<String, Any?>, rules: Map<String, String>): Map<String, Any?> =

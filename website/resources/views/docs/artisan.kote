@@ -20,6 +20,8 @@
 ./gradlew run --args='make:migration create_posts_table'
 ./gradlew run --args='make:controller UserController'
 ./gradlew run --args='make:model Post'
+./gradlew run --args='make:request StorePostRequest'
+./gradlew run --args='make:policy PostPolicy'
 ./gradlew run --args='key:generate'
 ./gradlew run --args='schedule:run'
 ./gradlew run --args='queue:work --once'</code></pre>
@@ -28,10 +30,10 @@
         <h2>What they do</h2>
         <ul>
             <li><code class="inline">list</code> — show registered commands</li>
-            <li><code class="inline">serve</code> — start the Kotlin development server</li>
+            <li><code class="inline">serve</code> — start the Jetty server (<code class="inline">--host</code>, <code class="inline">--port</code>)</li>
             <li><code class="inline">route:list</code> — print HTTP routes</li>
             <li><code class="inline">migrate</code> / <code class="inline">migrate:rollback</code> — run JSON files in <code class="inline">database/migrations</code></li>
-            <li><code class="inline">make:migration</code> / <code class="inline">make:controller</code> / <code class="inline">make:model</code> — generate starters</li>
+            <li><code class="inline">make:model</code>, <code class="inline">make:migration</code>, <code class="inline">make:controller</code>, <code class="inline">make:request</code>, <code class="inline">make:policy</code> — write the canonical path and print it. <code class="inline">make:controller</code> also writes <code class="inline">tests/{Name}Test.kt</code></li>
             <li><code class="inline">key:generate</code> — write <code class="inline">APP_KEY</code> into <code class="inline">.env</code></li>
             <li><code class="inline">schedule:run</code> — run due scheduler callbacks</li>
             <li><code class="inline">queue:work</code> — drain the in-memory array queue</li>

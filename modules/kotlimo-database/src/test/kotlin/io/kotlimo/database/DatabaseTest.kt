@@ -23,6 +23,16 @@ class Post : Model() {
     override val timestamps = false
 }
 
+class Note : Model() {
+    override val table = "notes"
+    override val fillable = listOf("title", "published", "meta")
+    override val timestamps = false
+    override val softDeletes = true
+    override val casts = mapOf("published" to "bool", "meta" to "json")
+
+    companion object : ModelCompanion<Note>(Note::class)
+}
+
 class DatabaseTest {
     private lateinit var connection: Connection
 
@@ -42,6 +52,14 @@ class DatabaseTest {
             id()
             bigInteger("user_id")
             string("title")
+        }
+        schema.drop("notes")
+        schema.create("notes") {
+            id()
+            string("title")
+            boolean("published")
+            text("meta").nullable()
+            timestamp("deleted_at").nullable()
         }
     }
 
@@ -189,5 +207,27 @@ class DatabaseTest {
         assertTrue(SchemaBuilder(connection).hasTable("tags"))
         migrator.rollback(migrations)
         assertFalse(SchemaBuilder(connection).hasTable("tags"))
+    }
+
+    @Test
+    fun `soft deletes hide rows until withTrashed`() {
+        val note = Note.create(mapOf("title" to "Draft", "published" to true, "meta" to mapOf("lang" to "en")))
+        assertEquals(true, note["published"])
+        assertEquals("en", (note["meta"] as Map<*, *>)["lang"])
+        note.delete()
+        assertTrue(note.trashed())
+        assertEquals(0, Note.count())
+        assertEquals(1, Note.withTrashed().count())
+        note.restore()
+        assertEquals(1, Note.count())
+    }
+
+    @Test
+    fun `with loads related models`() {
+        val user = User.create(mapOf("name" to "Ada", "email" to "ada2@example.com"))
+        connection.table("posts").insert(mapOf("user_id" to user.id, "title" to "Notes"))
+        val loaded = User.query().with("posts", Post::class).models()
+        val posts = loaded.first().relations["posts"] as List<*>
+        assertEquals(1, posts.size)
     }
 }

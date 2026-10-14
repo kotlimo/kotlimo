@@ -73,7 +73,7 @@
         <p>Validate incoming request data with Laravel-style rule strings before it ever touches your models.</p>
 
         <h2>Rules</h2>
-        <p>Supported rules include <code class="inline">required</code>, <code class="inline">email</code>, <code class="inline">min</code>, <code class="inline">max</code>, <code class="inline">integer</code>, <code class="inline">numeric</code>, <code class="inline">boolean</code>, <code class="inline">confirmed</code>, <code class="inline">in</code>, <code class="inline">url</code>, <code class="inline">same</code>, and <code class="inline">regex</code>.</p>
+        <p>Supported rules include <code class="inline">required</code>, <code class="inline">email</code>, <code class="inline">min</code>, <code class="inline">max</code>, <code class="inline">integer</code>, <code class="inline">numeric</code>, <code class="inline">boolean</code>, <code class="inline">confirmed</code>, <code class="inline">in</code>, <code class="inline">url</code>, <code class="inline">same</code>, <code class="inline">regex</code>, <code class="inline">unique:table,column</code>, and <code class="inline">exists:table,column</code>.</p>
         <pre><code>val validator = Validator.make(data, mapOf(
     "email" to "required|email",
     "password" to "required|min:8|confirmed"

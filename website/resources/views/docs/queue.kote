@@ -16,7 +16,7 @@
 dispatch(WelcomeMail("ada@example.com"))
 Queue.push(WelcomeMail("ada@example.com"))</code></pre>
         <pre><code>./gradlew run --args='queue:work --once'</code></pre>
-        <p>There is no Redis/database worker and no delayed retry backend. <code class="inline">later(seconds, job)</code> is honored by the array driver; sync still runs immediately.</p>
+        <p><code class="inline">QUEUE_DRIVER</code> accepts <code class="inline">sync</code> (default), <code class="inline">array</code>, <code class="inline">database</code>, and <code class="inline">redis</code>. Database jobs use the <code class="inline">jobs</code> table and <code class="inline">NamedJob</code>. Redis uses <code class="inline">REDIS_URL</code>. <code class="inline">later(seconds, job)</code> is honored by the array and database drivers; sync still runs immediately. <code class="inline">CACHE_DRIVER=redis</code> uses the same Redis URL for cache.</p>
     </article>
 </div>
 @endsection

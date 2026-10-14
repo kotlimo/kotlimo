@@ -30,5 +30,8 @@ class DatabaseServiceProvider(app: Application) : ServiceProvider(app) {
         app.instance(Connection::class, manager.connection())
         app.bind(SchemaBuilder::class) { SchemaBuilder(manager.connection()) }
         app.instance(io.kotlimo.database.Migrator::class, io.kotlimo.database.Migrator(manager.connection()))
+        io.kotlimo.validation.DatabaseRules.exists = { table, column, value ->
+            manager.connection().table(table).where(column, value).exists()
+        }
     }
 }

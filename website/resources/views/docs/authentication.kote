@@ -12,7 +12,7 @@
     val ok = Auth.attempt(mapOf(
         "email" to request.string("email"),
         "password" to request.string("password")
-    ))
+    ), remember = true)
     if (ok) redirect("/dashboard") else redirect("/login")
 }
 
@@ -25,7 +25,19 @@ Route.post("/logout") {
         <pre><code>request.user()
 Auth.check()
 user()?.getAuthIdentifier()</code></pre>
-        <p>Scaffolded apps include a <code class="inline">users</code> migration (<code class="inline">name</code>, <code class="inline">email</code>, <code class="inline">password</code>). Run <code class="inline">./gradlew run --args='migrate'</code> before attempting a login.</p>
+        <p><code class="inline">./kotlimo new</code> writes register, login, logout, remember-me, and password reset. Remember-me stores a SHA-256 hash in <code class="inline">users.remember_token</code> and a <code class="inline">kotlimo_remember</code> cookie. Password reset emails a token through the mail driver and checks it against <code class="inline">password_resets</code>.</p>
+
+        <h2>API tokens</h2>
+        <pre><code>val plain = Auth.createToken(user, "mobile")
+// Authorization: Bearer &lt;plain&gt;
+Auth.user()
+Auth.revokeToken(plain)</code></pre>
+        <p>The bearer guard runs before the session guard. Tokens live in <code class="inline">personal_access_tokens</code> as SHA-256 hashes. Requests that send <code class="inline">Authorization: Bearer</code> skip CSRF.</p>
+
+        <h2>Policies</h2>
+        <pre><code>Gate.policy(Post::class, PostPolicy())
+Gate.authorize(Auth.user(), "create", Post())</code></pre>
+        <p><code class="inline">Gate.authorize</code> throws 403 when the policy denies the ability. Generate a policy with <code class="inline">make:policy PostPolicy</code>.</p>
     </article>
 </div>
 @endsection

@@ -19,6 +19,7 @@ class QueryBuilder(
     private var limitValue: Int? = null
     private var offsetValue: Int? = null
     private val groups = mutableListOf<String>()
+    private val eager = mutableListOf<Pair<String, KClass<out Model>>>()
 
     fun select(vararg columns: String): QueryBuilder {
         this.columns.clear()
@@ -111,9 +112,37 @@ class QueryBuilder(
 
     fun get(): List<Map<String, Any?>> = connection.select(toSql(), getBindings())
 
+    fun with(name: String, related: KClass<out Model>): QueryBuilder {
+        eager += name to related
+        return this
+    }
+
     fun models(): List<Model> {
         val type = modelType ?: throw IllegalStateException("No model type bound to query")
-        return get().map { hydrate(type, it) }
+        val rows = get().map { hydrate(type, it) }
+        eagerLoad(rows)
+        return rows
+    }
+
+    private fun eagerLoad(rows: List<Model>) {
+        if (eager.isEmpty() || rows.isEmpty()) return
+        eager.forEach { (name, related) ->
+            val ids = rows.mapNotNull { it.id }
+            if (ids.isEmpty()) return@forEach
+            val relatedTable = io.kotlimo.support.Inflector.tableize(related.simpleName ?: "models")
+            val foreignKey = io.kotlimo.support.Inflector.foreignKey(rows.first()::class.simpleName ?: "model")
+            val grouped = connection.table(relatedTable).whereIn(foreignKey, ids).get().groupBy { it[foreignKey]?.toString() }
+            rows.forEach { model ->
+                val matches = grouped[model.id?.toString()].orEmpty().map { row ->
+                    related.java.getDeclaredConstructor().newInstance().apply {
+                        exists = true
+                        syncOriginal(row)
+                        connection = this@QueryBuilder.connection
+                    }
+                }
+                model.relations[name] = matches
+            }
+        }
     }
 
     fun first(): Map<String, Any?>? = limit(1).get().firstOrNull()

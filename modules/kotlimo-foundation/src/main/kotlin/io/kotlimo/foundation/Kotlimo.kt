@@ -5,6 +5,8 @@ import io.kotlimo.console.KeyGenerateCommand
 import io.kotlimo.console.MakeControllerCommand
 import io.kotlimo.console.MakeMigrationCommand
 import io.kotlimo.console.MakeModelCommand
+import io.kotlimo.console.MakePolicyCommand
+import io.kotlimo.console.MakeRequestCommand
 import io.kotlimo.console.MigrateCommand
 import io.kotlimo.console.MigrateRollbackCommand
 import io.kotlimo.console.QueueWorkCommand
@@ -43,6 +45,8 @@ fun Application.withConsole(): ConsoleKernel {
     kernel.register(RouteListCommand())
     kernel.register(MakeControllerCommand())
     kernel.register(MakeModelCommand())
+    kernel.register(MakeRequestCommand())
+    kernel.register(MakePolicyCommand())
     kernel.register(MakeMigrationCommand())
     kernel.register(MigrateCommand())
     kernel.register(MigrateRollbackCommand())

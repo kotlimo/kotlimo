@@ -78,7 +78,7 @@ Storage.exists("avatars/ada.txt")
 Storage.delete("avatars/ada.txt")
 
 Storage.disk("local").put("notes/one.txt", "ok")</code></pre>
-        <p>Only the local driver is implemented. There is no S3 adapter.</p>
+        <p>The default disk is local. Set <code class="inline">filesystems.default</code> to <code class="inline">s3</code> and provide <code class="inline">AWS_ACCESS_KEY_ID</code>, <code class="inline">AWS_SECRET_ACCESS_KEY</code>, plus <code class="inline">filesystems.disks.s3.bucket</code>, <code class="inline">region</code>, and optional <code class="inline">endpoint</code> for S3-compatible storage.</p>
     </article>
 </div>
 

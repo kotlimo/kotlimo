@@ -9,6 +9,10 @@ mysql = "9.3.0"
 slf4j = "2.0.17"
 bcrypt = "0.10.2"
 bcprov = "1.80"
+jedis = "5.2.0"
+jakarta-mail = "2.0.3"
+jetty = "11.0.24"
+aws = "2.31.50"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
@@ -25,6 +29,12 @@ bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
 bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bcprov" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.12.2" }
+jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
+jakarta-mail = { module = "org.eclipse.angus:angus-mail", version.ref = "jakarta-mail" }
+jetty-server = { module = "org.eclipse.jetty:jetty-server", version.ref = "jetty" }
+jetty-servlet = { module = "org.eclipse.jetty:jetty-servlet", version.ref = "jetty" }
+aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
+aws-url = { module = "software.amazon.awssdk:url-connection-client", version.ref = "aws" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

@@ -34,8 +34,16 @@ User.find(user.id!!)</code></pre>
     timestamps()
 }</code></pre>
 
-        <h2>Migrations</h2>
-        <p>JSON files in <code class="inline">database/migrations</code> are applied in filename order. A scaffolded app already has <code class="inline">0001_create_users_table.json</code>.</p>
+        <h2>Casts, eager load, and soft deletes</h2>
+        <pre><code>class Post : Model() {
+    override val softDeletes = true
+    override val casts = mapOf("published" to "bool", "meta" to "json")
+}
+
+Post.query().with("comments", Comment::class).models()
+post.delete()
+Post.withTrashed().get()</code></pre>
+        <p>JSON files in <code class="inline">database/migrations</code> are applied in filename order. A scaffolded app already has users, password resets, tokens, posts, and jobs.</p>
         <pre><code>./gradlew run --args='make:migration create_posts_table'
 ./gradlew run --args='migrate'
 ./gradlew run --args='migrate:rollback'</code></pre>

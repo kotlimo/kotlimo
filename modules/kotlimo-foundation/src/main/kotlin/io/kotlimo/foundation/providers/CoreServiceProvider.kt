@@ -2,6 +2,8 @@ package io.kotlimo.foundation.providers
 
 import io.kotlimo.cache.ArrayStore
 import io.kotlimo.cache.CacheRepository
+import io.kotlimo.cache.JedisKeyValue
+import io.kotlimo.cache.RedisStore
 import io.kotlimo.config.ConfigRepository
 import io.kotlimo.config.Environment
 import io.kotlimo.events.Dispatcher
@@ -26,7 +28,16 @@ class CoreServiceProvider(app: Application) : ServiceProvider(app) {
         Hash.driver = env.get("HASH_DRIVER") ?: config.string("hash.driver", Hash.BCRYPT)
         app.instance(ConfigRepository::class, config)
         app.singleton(Dispatcher::class) { Dispatcher() }
-        app.singleton(CacheRepository::class) { CacheRepository(ArrayStore()) }
+        app.singleton(CacheRepository::class) {
+            val driver = env.get("CACHE_DRIVER") ?: config.string("cache.driver", "array")
+            val store = if (driver == "redis") {
+                val url = env.get("REDIS_URL") ?: config.string("cache.redis", "redis://127.0.0.1:6379")
+                RedisStore(JedisKeyValue(url))
+            } else {
+                ArrayStore()
+            }
+            CacheRepository(store)
+        }
         app.singleton(Logger::class) { Logger("kotlimo") }
     }
 

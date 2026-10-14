@@ -109,13 +109,31 @@ object Hash : Facade() {
 object Auth : Facade() {
     private fun manager() = app.make(AuthManager::class)
     private fun request() = app.make(Request::class)
-    fun attempt(credentials: Map<String, Any?>): Boolean = manager().attempt(request(), credentials)
-    fun login(user: Authenticatable) = manager().login(request(), user)
+    fun attempt(credentials: Map<String, Any?>, remember: Boolean = false): Boolean =
+        manager().attempt(request(), credentials, remember)
+    fun login(user: Authenticatable, remember: Boolean = false) = manager().login(request(), user, remember)
     fun logout() = manager().logout(request())
+    fun createToken(user: Authenticatable, name: String = "default"): String = manager().createToken(user, name)
+    fun revokeToken(plain: String): Boolean = manager().revokeToken(plain)
     fun user(): Authenticatable? = if (app.bound(Request::class)) manager().user(request()) else null
     fun check(): Boolean = user() != null
     fun guest(): Boolean = user() == null
     fun id(): Any? = user()?.getAuthIdentifier()
+}
+
+object Gate : Facade() {
+    private fun gate() = app.make(io.kotlimo.auth.Gate::class)
+    fun policy(type: kotlin.reflect.KClass<*>, policy: io.kotlimo.auth.Policy) = gate().policy(type, policy)
+    fun allows(user: io.kotlimo.auth.Authenticatable?, ability: String, model: Any? = null): Boolean =
+        gate().allows(user, ability, model)
+    fun authorize(user: io.kotlimo.auth.Authenticatable?, ability: String, model: Any? = null) =
+        gate().authorize(user, ability, model)
+}
+
+object Password : Facade() {
+    private fun broker() = app.make(io.kotlimo.auth.PasswordBroker::class)
+    fun sendResetLink(email: String): String? = broker().sendResetLink(email)
+    fun reset(email: String, token: String, password: String): Boolean = broker().reset(email, token, password)
 }
 
 object Mail : Facade() {

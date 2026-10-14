@@ -13,6 +13,7 @@ class StartSession(
         onStart(session)
         val response = next(request)
         manager.save(session)
+        request.queuedCookies.forEach { response.cookie(it) }
         response.cookie(
             Cookie(
                 name = manager.cookieName,
@@ -31,7 +32,7 @@ class VerifyCsrfToken(
     private val except: List<String> = emptyList()
 ) : Middleware {
     override fun handle(request: Request, next: (Request) -> Response): Response {
-        if (isReading(request) || inExcept(request) || tokensMatch(request)) {
+        if (isReading(request) || request.bearerToken() != null || inExcept(request) || tokensMatch(request)) {
             return next(request)
         }
         throw HttpException(419, "CSRF token mismatch.")

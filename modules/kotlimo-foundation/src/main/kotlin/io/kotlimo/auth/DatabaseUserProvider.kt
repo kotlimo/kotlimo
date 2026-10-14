@@ -22,4 +22,17 @@ class DatabaseUserProvider(
         val row = query.first() ?: return null
         return GenericUser(row)
     }
+
+    override fun updateRememberToken(user: Authenticatable, token: String?) {
+        connection().table(table).where(identifier, user.getAuthIdentifier()).update(mapOf("remember_token" to token))
+    }
+
+    override fun retrieveByToken(id: Any, token: String): Authenticatable? {
+        val row = connection().table(table).where(identifier, id).where("remember_token", token).first() ?: return null
+        return GenericUser(row)
+    }
+
+    override fun updatePassword(user: Authenticatable, hashedPassword: String) {
+        connection().table(table).where(identifier, user.getAuthIdentifier()).update(mapOf("password" to hashedPassword))
+    }
 }
